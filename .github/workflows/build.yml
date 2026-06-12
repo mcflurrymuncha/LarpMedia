@@ -18,7 +18,10 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'npm'
+        # Removed the cache line that forces lookups for lockfiles
+
+    - name: Install App Packages
+      run: npm install
 
     - name: Clean Install App Packages
       run: npm ci
