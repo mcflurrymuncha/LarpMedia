@@ -1,0 +1,48 @@
+name: Build LarpMedia
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-windows-x64:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Install Cross-Compiler Packages
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y build-essential mingw-w64 wget unzip
+
+    - name: Download Microsoft WebView2 SDK
+      run: |
+        echo "Downloading WebView2 Native Nuget Archive..."
+        wget https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/1.0.1210.39 -O webview2.zip
+        unzip -o webview2.zip -d ./webview2_sdk
+
+    - name: Dowbnload Discord RPC SDK
+      run: |
+        echo "Downloading Discord RPC Core binaries..."
+        wget https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -O discord_rpc.zip
+        unzip -o discord_rpc.zip -d ./discord_sdk
+
+    - name: Compile
+      run: |
+        echo "Orchestrating hardware-optimized compilation..."
+        x86_64-w64-mingw32-g++ -O3 -std=c++17 main.cpp -o larpmedia_player.exe \
+          -I./webview2_sdk/build/native/include \
+          -I./discord_sdk/discord-rpc/include \
+          -L./discord_sdk/discord-rpc/lib/x64-static \
+          -static -ldiscord-rpc -lcomctl32 -lole32 -lshlwapi -lws2_32 -lpsapi
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: larpmedia-player-win64
+        path: larpmedia_player.exe
+        retention-days: 7
