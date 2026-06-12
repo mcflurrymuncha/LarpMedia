@@ -8,7 +8,6 @@ on:
 
 jobs:
   build-windows:
-    # Switched runner layer to native Windows
     runs-on: windows-latest
 
     steps:
@@ -24,7 +23,8 @@ jobs:
       run: npm install
 
     - name: Execute Electron Production Compiler Build
-      run: npm run dist
+      # Added -c.publish=never to stop the runner from hunting for a GitHub Token
+      run: npx electron-builder --win -c.publish=never
 
     - name: Upload Finished Windows Binary Artifacts
       uses: actions/upload-artifact@v4
