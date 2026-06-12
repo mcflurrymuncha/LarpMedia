@@ -25,10 +25,6 @@ jobs:
 
     - name: Execute Electron Production Compiler Build
       run: npm run dist
-      env:
-        # Passes the newly made certificate into electron-builder's signing pipeline
-        WIN_CSC_LINK: ./larpmedia_cert.pfx
-        WIN_CSC_KEY_PASSWORD: LarpMediaSecure2026
 
     - name: Upload Finished Windows Binary Artifacts
       uses: actions/upload-artifact@v4
