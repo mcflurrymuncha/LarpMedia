@@ -3,7 +3,6 @@
 #include <string>
 #include <tchar.h>
 #include <wrl/client.h>
-#include <wrl/event.h>
 #include "WebView2.h"
 #include "discord_rpc.h"
 
@@ -13,7 +12,6 @@ HWND hWnd;
 static TCHAR szWindowClass[] = _T("LarpMediaApp");
 static TCHAR szTitle[] = _T("LarpMedia Player Engine");
 
-// Standard WRL ComPtr declarations replacing WIL
 ComPtr<ICoreWebView2Controller> webviewController;
 ComPtr<ICoreWebView2> webviewWindow;
 
