@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LarpMedia Player (AI Generated Test HTML)</title>
+  <title>LarpMedia Player Console</title>
   <style>
     @import url('https://cdn.jsdelivr.net/npm/@fontsource/cascadia-code@5.0.1/index.min.css');
     
@@ -239,7 +239,7 @@
             <input type="file" id="audio-picker" accept="audio/*" multiple style="display:none;">
           </label>
           <div class="playlist-box" id="playlist-queue">
-            <div style="padding:16px; color:#553b80; text-align:center;">Queue empty</div>
+            <div style="padding:166px; color:#553b80; text-align:center;">Queue empty</div>
           </div>
         </div>
 
@@ -325,6 +325,9 @@
   </div>
 
   <script>
+    // Integration to safely dispatch state over to our main process framework
+    const { ipcRenderer } = require('electron');
+
     let audioContext = null, audioSourceNode = null, playlistQueue = [], currentTrackIndex = -1;
     let preampNode = null, biquadFilters = {}, analyserNode = null;
     let isPlaying = false, startTime = 0, pausedTime = 0;
@@ -400,9 +403,13 @@
       renderQueueUI();
 
       const track = playlistQueue[index];
+      const trackCleanName = track.file.name.replace(/\.[^/.]+$/, "");
       trackTitleDisplay.innerText = track.file.name;
       statusLogger.innerText = "Decoding channel array...";
       pausedTime = 0;
+
+      // Broadcast up to Electron backend to change Discord tracking string
+      ipcRenderer.send('update-track', trackCleanName);
 
       if(!track.buffer) {
         const reader = new FileReader();
