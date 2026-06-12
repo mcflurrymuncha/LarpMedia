@@ -23,16 +23,6 @@ jobs:
     - name: Install App Packages
       run: npm install
 
-    - name: Generate Local Code Signing Certificate
-      shell: powershell
-      run: |
-        $pwd = Convert-ToSecureString -String "LarpMediaSecure2026" -Force -AsPlainText
-        # Creates a local code-signing signature block
-        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=LarpMedia" -KeyUsage DigitalSignature -FriendlyName "LarpMedia Local Cert"
-        # Exports it to a PFX file that electron-builder can inject into the .exe
-        Export-PfxCertificate -Cert $cert -FilePath ./larpmedia_cert.pfx -Password $pwd
-        echo "Local code signing package provisioned."
-
     - name: Execute Electron Production Compiler Build
       run: npm run dist
       env:
