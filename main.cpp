@@ -2,12 +2,8 @@
 #include <stdlib.h>
 #include <string>
 #include <tchar.h>
-#include <wrl.h>
-
-// Bypasses MinGW WinRT limitations by disabling unnecessary UWP header inclusions
-#define WIL_SUPPRESS_WINRT_SUPPORT
-#include <wil/com.h>
-
+#include <wrl/client.h>
+#include <wrl/event.h>
 #include "WebView2.h"
 #include "discord_rpc.h"
 
@@ -15,22 +11,21 @@ using namespace Microsoft::WRL;
 
 HWND hWnd;
 static TCHAR szWindowClass[] = _T("LarpMediaApp");
-static TCHAR szTitle[] = _T("LarpMedia");
-wil::com_ptr<ICoreWebView2Controller> webviewController;
-wil::com_ptr<ICoreWebView2> webviewWindow;
+static TCHAR szTitle[] = _T("LarpMedia Player Engine");
+
+// Standard WRL ComPtr declarations replacing WIL
+ComPtr<ICoreWebView2Controller> webviewController;
+ComPtr<ICoreWebView2> webviewWindow;
 
 void UpdateDiscordTrackPresence(const char* trackName, const char* durationStr) {
     DiscordRichPresence discordPresence;
     memset(&discordPresence, 0, sizeof(discordPresence));
     
-    // Explicitly mapping the activity type: 
-    // 0 = Playing, 1 = Streaming, 2 = Listening, 3 = Watching
-    discordPresence.activityType = 2; 
-    
+    discordPresence.activityType = 2; // 2 = Listening status
     discordPresence.state = trackName;
     discordPresence.details = "Processing Harmonics";
     discordPresence.largeImageKey = "larpmedia_purple";
-    discordPresence.largeImageText = "LarpMedia";
+    discordPresence.largeImageText = "LarpMedia Player v1.0";
     discordPresence.instance = 1;
     
     Discord_UpdatePresence(&discordPresence);
@@ -39,8 +34,6 @@ void UpdateDiscordTrackPresence(const char* trackName, const char* durationStr) 
 void InitializeDiscordPresence() {
     DiscordEventHandlers handlers;
     memset(&handlers, 0, sizeof(handlers));
-    
-    // Initializing with your custom Discord Application ID
     Discord_Initialize("1515011986021421218", &handlers, 1, NULL);
     UpdateDiscordTrackPresence("Idle / Deck Empty", "0:00");
 }
@@ -103,7 +96,12 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                         RECT bounds;
                         GetClientRect(hWnd, &bounds);
                         webviewController->put_Bounds(bounds);
-                        webviewWindow->Navigate(L"file:///index.html");
+
+                        webviewWindow->SetVirtualHostNameToFolderMapping(
+                            L"larpmedia.local", L".", COREWEBVIEW2_HOST_RESOURCE_ACCESS_KIND_ALLOW
+                        );
+                        
+                        webviewWindow->Navigate(L"https://larpmedia.local/index.html");
                         return S_OK;
                     }).Get());
                 return S_OK;
