@@ -8,7 +8,8 @@ on:
 
 jobs:
   build-windows:
-    runs-on: ubuntu-24.04
+    # Switched runner layer to native Windows
+    runs-on: windows-latest
 
     steps:
     - name: Checkout Repository Code
@@ -18,20 +19,32 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        # Removed the cache line that forces lookups for lockfiles
 
     - name: Install App Packages
       run: npm install
 
-    - name: Clean Install App Packages
-      run: npm ci
+    - name: Generate Local Code Signing Certificate
+      shell: powershell
+      run: |
+        $pwd = Convert-ToSecureString -String "LarpMediaSecure2026" -Force -AsPlainText
+        # Creates a local code-signing signature block
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=LarpMedia" -KeyUsage DigitalSignature -FriendlyName "LarpMedia Local Cert"
+        # Exports it to a PFX file that electron-builder can inject into the .exe
+        Export-PfxCertificate -Cert $cert -FilePath ./larpmedia_cert.pfx -Password $pwd
+        echo "Local code signing package provisioned."
 
     - name: Execute Electron Production Compiler Build
       run: npm run dist
+      env:
+        # Passes the newly made certificate into electron-builder's signing pipeline
+        WIN_CSC_LINK: ./larpmedia_cert.pfx
+        WIN_CSC_KEY_PASSWORD: LarpMediaSecure2026
 
-    - name: Upload Finished Windows Installer Binaries
+    - name: Upload Finished Windows Binary Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: larpmedia-installer-win64
-        path: dist/*.exe
+        name: larpmedia-player-win64
+        path: |
+          dist/*.exe
+          dist/win-unpacked/**
         retention-days: 7
