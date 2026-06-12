@@ -3,7 +3,11 @@
 #include <string>
 #include <tchar.h>
 #include <wrl.h>
+
+// Bypasses MinGW WinRT limitations by disabling unnecessary UWP header inclusions
+#define WIL_SUPPRESS_WINRT_SUPPORT
 #include <wil/com.h>
+
 #include "WebView2.h"
 #include "discord_rpc.h"
 
