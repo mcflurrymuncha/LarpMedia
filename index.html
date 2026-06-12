@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LarpMedia Player (AI Generated Test HTML)</title>
+  <style>
+    @import url('https://cdn.jsdelivr.net/npm/@fontsource/cascadia-code@5.0.1/index.min.css');
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      font-family: 'Cascadia Code', monospace; 
+      font-size: 11px; 
+      background-color: #06040a; 
+      color: #eae2f8; 
+      height: 100vh; 
+      width: 100vw; 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    .nav-bar {
+      height: 50px;
+      border: 1px solid #281d3d;
+      background-color: #11091e;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #904eff;
+      display: inline-block;
+      margin-right: 8px;
+      box-shadow: 0 0 10px #904eff;
+    }
+    .brand-title { font-weight: bold; letter-spacing: 0.05em; font-size: 13px; color: #ccb7f5; }
+    
+    .workspace {
+      flex: 1;
+      margin: 12px 0;
+      display: flex;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .control-panel {
+      width: 340px;
+      border: 1px solid #281d3d;
+      background-color: #11091e;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .display-panel {
+      flex: 1;
+      border: 1px solid #281d3d;
+      background-color: #11091e;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .card {
+      border: 1px solid #362256;
+      padding: 14px;
+      background-color: #0a0514;
+    }
+    .card-title {
+      display: block;
+      font-size: 9px;
+      font-weight: bold;
+      color: #b099dd;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .playlist-box {
+      border: 1px solid #362256;
+      background-color: #06040a;
+      height: 250px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .playlist-item {
+      padding: 10px;
+      border-bottom: 1px solid #1a102f;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .playlist-item:hover { background-color: #170d27; }
+    .playlist-item.active { background-color: #2b154c; color: #ffffff; border-left: 3px solid #7c3aed; }
+
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #a491ca;
+      margin-bottom: 6px;
+    }
+    .value-display { color: #d6cbfa; font-weight: bold; }
+
+    input[type="range"].horizontal {
+      width: 100%;
+      height: 4px;
+      background: #281d3d;
+      appearance: none;
+      outline: none;
+    }
+    input[type="range"].horizontal::-webkit-slider-thumb {
+      appearance: none; width: 10px; height: 16px; background: #7c3aed; cursor: pointer; border-radius: 2px;
+    }
+
+    .eq-grid {
+      height: 160px;
+      border: 1px solid #281d3d;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      background-color: #06040a;
+    }
+    .eq-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 18%;
+    }
+    .eq-val { font-size: 9px; color: #ccbce3; }
+    .eq-label { font-size: 8px; color: #876fae; font-weight: bold; }
+    
+    input[type="range"].vertical {
+      writing-mode: vertical-lr;
+      direction: rtl;
+      appearance: slider-vertical;
+      width: 16px;
+      height: 100px;
+      background: transparent;
+    }
+
+    .visualizer-container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      position: relative;
+      background-color: #030206;
+      border: 1px solid #281d3d;
+      margin-bottom: 16px;
+    }
+    #visualiser { width: 100%; height: 100%; display: block; }
+    .visualizer-label { position: absolute; top: 12px; left: 12px; font-size: 9px; color: #876fae; }
+
+    .timeline-container {
+      height: 38px;
+      border: 1px solid #281d3d;
+      background-color: #06040a;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .time-stamp { font-size: 10px; color: #a491ca; }
+
+    .footer-panel {
+      border: 1px solid #362256;
+      background-color: #0a0514;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .track-info { display: flex; flex-direction: column; max-width: 50%; }
+    .track-title { font-weight: bold; color: #ffffff; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .track-meta { font-size: 10px; color: #876fae; margin-top: 3px; }
+    
+    .button-group { display: flex; gap: 8px; align-items: center; }
+
+    button {
+      height: 40px;
+      font-family: 'Cascadia Code', monospace;
+      font-weight: bold;
+      padding: 0 24px;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-secondary { border: 1px solid #553b80; background: transparent; color: #ccbce3; }
+    .btn-secondary:hover:not(:disabled) { background: #221438; }
+    .btn-primary { background-color: #7c3aed; color: #ffffff; }
+    .btn-primary:hover:not(:disabled) { background: #9155fd; }
+    button:disabled { opacity: 0.15; cursor: not-allowed; }
+
+    .system-status-bar {
+      height: 24px;
+      font-size: 9px;
+      color: #876fae;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #281d3d;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <div>
+      <span class="status-dot"></span>
+      <span class="brand-title">LarpMedia Audio Deck Workspace</span>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <div class="page active">
+      
+      <div class="control-panel">
+        <div class="card">
+          <span class="card-title">Ingest Tracks</span>
+          <label class="btn-secondary" style="display:block; text-align:center; padding: 10px; cursor:pointer; font-weight:bold; border: 1px dashed #553b80;">
+            Import Files
+            <input type="file" id="audio-picker" accept="audio/*" multiple style="display:none;">
+          </label>
+          <div class="playlist-box" id="playlist-queue">
+            <div style="padding:16px; color:#553b80; text-align:center;">Queue empty</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="control-row">
+            <span>Resampling Speed Engine</span>
+            <span id="label-pitch" class="value-display">1.00x</span>
+          </div>
+          <input type="range" id="slider-pitch" min="0.5" max="2.0" step="0.01" value="1.0" class="horizontal">
+        </div>
+
+        <div class="card">
+          <span class="card-title">Parametric Matrix Core</span>
+          <div class="eq-grid">
+            <div class="eq-column">
+              <span id="v-sub" class="eq-val">0dB</span>
+              <input type="range" id="slider-sub" data-band="sub" min="-15" max="15" step="1" value="0" class="vertical">
+              <span class="eq-label">Sub</span>
+            </div>
+            <div class="eq-column">
+              <span id="v-low" class="eq-val">0dB</span>
+              <input type="range" id="slider-low" data-band="low" min="-15" max="15" step="1" value="0" class="vertical">
+              <span class="eq-label">Low</span>
+            </div>
+            <div class="eq-column">
+              <span id="v-mid" class="eq-val">0dB</span>
+              <input type="range" id="slider-mid" data-band="mid" min="-15" max="15" step="1" value="0" class="vertical">
+              <span class="eq-label">Mid</span>
+            </div>
+            <div class="eq-column">
+              <span id="v-high" class="eq-val">0dB</span>
+              <input type="range" id="slider-high" data-band="high" min="-15" max="15" step="1" value="0" class="vertical">
+              <span class="eq-label">High</span>
+            </div>
+            <div class="eq-column">
+              <span id="v-treb" class="eq-val">0dB</span>
+              <input type="range" id="slider-treb" data-band="treb" min="-15" max="15" step="1" value="0" class="vertical">
+              <span class="eq-label">Treb</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:auto;">
+          <div class="control-row">
+            <span>Input Pre-Amplifier Gain</span>
+            <span id="label-preamp" class="value-display">0.0 dB</span>
+          </div>
+          <input type="range" id="slider-preamp" min="-12" max="12" step="0.5" value="0" class="horizontal">
+        </div>
+      </div>
+
+      <div class="display-panel">
+        <div class="visualizer-container">
+          <canvas id="visualiser"></canvas>
+          <div class="visualizer-label">Hardware Render Monitor</div>
+        </div>
+        
+        <div class="timeline-container">
+          <span id="time-current" class="time-stamp">0:00</span>
+          <input type="range" id="timeline" min="0" max="100" value="0" class="horizontal" style="flex: 1; cursor: pointer;">
+          <span id="time-total" class="time-stamp">0:00</span>
+        </div>
+
+        <div class="footer-panel">
+          <div class="track-info">
+            <span class="track-title" id="track-title-display">No Track Loaded</span>
+            <span class="track-meta" id="track-meta-display">Engine Standby</span>
+          </div>
+          <div class="button-group">
+            <button id="btn-prev" class="btn-secondary" style="padding:0 15px;"><</button>
+            <button id="btn-play" class="btn-primary">Play</button>
+            <button id="btn-next" class="btn-secondary" style="padding:0 15px;">></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="system-status-bar">
+    <span>LarpMedia Core Platform Architecture</span>
+    <span id="status-logger">Awaiting audio pipeline ingestion</span>
+  </div>
+
+  <script>
+    let audioContext = null, audioSourceNode = null, playlistQueue = [], currentTrackIndex = -1;
+    let preampNode = null, biquadFilters = {}, analyserNode = null;
+    let isPlaying = false, startTime = 0, pausedTime = 0;
+
+    const audioPicker = document.getElementById('audio-picker');
+    const queueBox = document.getElementById('playlist-queue');
+    const trackTitleDisplay = document.getElementById('track-title-display');
+    const trackMetaDisplay = document.getElementById('track-meta-display');
+    const btnPlay = document.getElementById('btn-play');
+    const statusLogger = document.getElementById('status-logger');
+    const timeline = document.getElementById('timeline');
+    const timeCurrent = document.getElementById('time-current');
+    const timeTotal = document.getElementById('time-total');
+    const canvas = document.getElementById('visualiser');
+    const canvasCtx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function initAudioGraph() {
+      if (audioContext) return;
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      preampNode = audioContext.createGain();
+      analyserNode = audioContext.createAnalyser();
+      analyserNode.fftSize = 256;
+
+      const bands = { sub: 60, low: 230, mid: 910, high: 4000, treb: 14000 };
+      let lastNode = preampNode;
+
+      Object.keys(bands).forEach(key => {
+        const filter = audioContext.createBiquadFilter();
+        filter.type = (key === 'sub') ? 'lowshelf' : (key === 'treb' ? 'highshelf' : 'peaking');
+        filter.frequency.value = bands[key];
+        filter.gain.value = 0;
+        biquadFilters[key] = filter;
+        lastNode.connect(filter);
+        lastNode = filter;
+      });
+
+      lastNode.connect(analyserNode);
+      analyserNode.connect(audioContext.destination);
+    }
+
+    audioPicker.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      if(!files.length) return;
+
+      initAudioGraph();
+      files.forEach(file => playlistQueue.push({ file: file, buffer: null }));
+      renderQueueUI();
+      if(currentTrackIndex === -1) loadTrack(0);
+    });
+
+    function renderQueueUI() {
+      queueBox.innerHTML = '';
+      playlistQueue.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `playlist-item ${index === currentTrackIndex ? 'active' : ''}`;
+        div.innerText = `${index + 1}. ${item.file.name.replace(/\.[^/.]+$/, "")}`;
+        div.onclick = () => loadTrack(index);
+        queueBox.appendChild(div);
+      });
+    }
+
+    async function loadTrack(index) {
+      if(index < 0 || index >= playlistQueue.length) return;
+      if(isPlaying) stopTrack();
+      currentTrackIndex = index;
+      renderQueueUI();
+
+      const track = playlistQueue[index];
+      trackTitleDisplay.innerText = track.file.name;
+      statusLogger.innerText = "Decoding channel array...";
+      pausedTime = 0;
+
+      if(!track.buffer) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          track.buffer = await audioContext.decodeAudioData(e.target.result);
+          finishTrackLoading(track.buffer);
+        };
+        reader.readAsArrayBuffer(track.file);
+      } else {
+        finishTrackLoading(track.buffer);
+      }
+    }
+
+    function finishTrackLoading(buffer) {
+      trackMetaDisplay.innerText = `${buffer.sampleRate}Hz | Stereo Block Stream`;
+      statusLogger.innerText = "Audio tracking engine healthy";
+      timeline.max = Math.floor(buffer.duration);
+      timeTotal.innerText = formatTime(buffer.duration);
+      timeline.value = 0;
+      timeCurrent.innerText = "0:00";
+    }
+
+    function playTrack() {
+      if (currentTrackIndex === -1 || !playlistQueue[currentTrackIndex].buffer) return;
+      
+      audioSourceNode = audioContext.createBufferSource();
+      audioSourceNode.buffer = playlistQueue[currentTrackIndex].buffer;
+      audioSourceNode.playbackRate.value = parseFloat(document.getElementById('slider-pitch').value);
+      audioSourceNode.connect(preampNode);
+      
+      startTime = audioContext.currentTime - pausedTime / audioSourceNode.playbackRate.value;
+      audioSourceNode.start(0, pausedTime);
+      isPlaying = true;
+      btnPlay.innerText = "Pause";
+    }
+
+    function stopTrack() {
+      if (!audioSourceNode) return;
+      try { audioSourceNode.stop(); } catch(e){}
+      pausedTime = audioContext.currentTime - startTime;
+      pausedTime *= parseFloat(document.getElementById('slider-pitch').value);
+      isPlaying = false;
+      btnPlay.innerText = "Play";
+    }
+
+    btnPlay.onclick = () => { if(isPlaying) stopTrack(); else playTrack(); };
+    document.getElementById('btn-prev').onclick = () => { if(currentTrackIndex > 0) loadTrack(currentTrackIndex - 1); };
+    document.getElementById('btn-next').onclick = () => { if(currentTrackIndex < playlistQueue.length - 1) loadTrack(currentTrackIndex + 1); };
+
+    document.querySelectorAll('.vertical').forEach(slider => {
+      slider.oninput = (e) => {
+        const band = e.target.getAttribute('data-band');
+        const dbVal = e.target.value;
+        document.getElementById(`v-${band}`).innerText = `${dbVal}dB`;
+        if(biquadFilters[band]) biquadFilters[band].gain.value = parseFloat(dbVal);
+      };
+    });
+
+    document.getElementById('slider-preamp').oninput = (e) => {
+      const val = e.target.value;
+      document.getElementById('label-preamp').innerText = `${val} dB`;
+      if(preampNode) preampNode.gain.value = Math.pow(10, parseFloat(val) / 20);
+    };
+
+    document.getElementById('slider-pitch').oninput = (e) => {
+      const val = e.target.value;
+      document.getElementById('label-pitch').innerText = `${val}x`;
+      if(audioSourceNode && isPlaying) audioSourceNode.playbackRate.value = parseFloat(val);
+    };
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function render() {
+      requestAnimationFrame(render);
+      if(!canvas.width) resizeCanvas();
+
+      if (analyserNode && isPlaying) {
+        const totalBins = analyserNode.frequencyBinCount;
+        const array = new Uint8Array(totalBins);
+        analyserNode.getByteFrequencyData(array);
+
+        canvasCtx.fillStyle = '#030206';
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const width = (canvas.width / totalBins) * 1.8;
+        let startX = 0;
+
+        for (let i = 0; i < totalBins; i++) {
+          let height = array[i] * (canvas.height / 280);
+          canvasCtx.fillStyle = `rgba(124, 58, 237, ${array[i] / 240})`;
+          canvasCtx.fillRect(startX, canvas.height - height, width - 2, height);
+          startX += width;
+        }
+
+        const currentSeconds = audioContext.currentTime - startTime;
+        const adjustedSeconds = currentSeconds * parseFloat(document.getElementById('slider-pitch').value);
+        timeline.value = Math.floor(adjustedSeconds);
+        timeCurrent.innerText = formatTime(adjustedSeconds);
+      }
+    }
+    render();
+  </script>
+</body>
+</html>
