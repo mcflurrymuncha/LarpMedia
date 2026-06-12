@@ -23,8 +23,8 @@ jobs:
       run: npm install
 
     - name: Execute Electron Production Compiler Build
-      # Added -c.publish=never to stop the runner from hunting for a GitHub Token
-      run: npx electron-builder --win -c.publish=never
+      # Clean execution without messy CLI flags
+      run: npm run dist
 
     - name: Upload Finished Windows Binary Artifacts
       uses: actions/upload-artifact@v4
